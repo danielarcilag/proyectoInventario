@@ -1,25 +1,25 @@
+import sqlite3
 
-from logging import exception
-from model.conexion import conexion
-
-
-class cliente:
-    def __init__(self,nombre,ciudad):
-        self.nombre = nombre
-        self.ciudad = ciudad
+def executeQuery(query):
+    conx = sqlite3.connect("db/testdb.db")
+    cursor = conx.cursor()
+    
+    try:
+        cursor.execute(query)
+        conx.commit()
+        print("guardado")
+    except Exception as e:
+        conx.rollback()
+        print(f'error: {e}')
+    finally:
+        cursor.close()
+        conx.close()
 
 def crearCliente(cliente):
-    query = f'INSERT INTO clientes nombre ciudad VALUES {cliente.nombre} {cliente.ciudad}'
+    query=f"INSERT INTO Clientes (nombre,ciudad) VALUES ('{cliente.nombre}','{cliente.ciudad}')"
+    executeQuery(query)
 
-    conexion1 = conexion()
-    try:
-        with conexion:
-            with conexion1.cursor as cursor:
-                cursor.execute(query)
-                print("guardado")
-    except exception as e:
-        print(f'no se puo {e}')
-        conexion.rollback()
-    finally:
-        conexion1.close()
-         
+def borrarCliente(cliente):
+    query=f"DELETE FROM Clientes WHERE id_cliente=1"
+    executeQuery(query)
+
