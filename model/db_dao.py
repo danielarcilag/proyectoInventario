@@ -23,3 +23,6 @@ def borrarCliente(cliente):
     query=f"DELETE FROM Clientes WHERE id_cliente=1"
     executeQuery(query)
 
+def crearProducto():
+    pass
+
