@@ -15,7 +15,7 @@ def executeQuery(query):
         cursor.close()
         conx.close()
 
-def crearCliente(cliente):
+def crearClienteDao(cliente):
     query=f"INSERT INTO Clientes (nombre,ciudad) VALUES ('{cliente.nombre}','{cliente.ciudad}')"
     executeQuery(query)
 
