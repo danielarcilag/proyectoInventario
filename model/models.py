@@ -13,7 +13,7 @@ class produto:
         self.cantidad_inventario = cantiadad_inventario
 
 class pedido:
-    def __init__(self,id_cliente,id_producto,cantidad):
+    def __init__(self,id_cliente,referencia,cantidad):
         self.id_cliente = id_cliente
-        self.id_producto = id_producto
+        self.referencia = referencia
         self.cantidad = cantidad
