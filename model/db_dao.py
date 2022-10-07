@@ -15,7 +15,7 @@ def executeQuery(query):
         cursor.close()
         conx.close()
 
-def busquedaGeneral(query):
+def busqueda(query):
     conx = sqlite3.connect("db/testdb.db")
     cursor = conx.cursor()
     
@@ -31,24 +31,6 @@ def busquedaGeneral(query):
         cursor.close()
         conx.close()
     return datos
-
-def busquedaIndividual(query):
-    conx = sqlite3.connect("db/testdb.db")
-    cursor = conx.cursor()
-    
-    try:
-        cursor.execute(query)
-        dato = cursor.fetchone()
-        conx.commit()
-        print("guardado")
-    except Exception as e:
-        conx.rollback()
-        print(f'error: {e}')
-    finally:
-        cursor.close()
-        conx.close()
-    return dato[0]
-
 
 
 def crearClienteDao(cliente):
@@ -67,14 +49,36 @@ def eliminarProductoDao(referencia):
     query=f"DELETE FROM Productos WHERE referencia='{referencia}'"
     executeQuery(query)
 
-def crearPedidoDao(pedido):
-    query=f"INSERT INTO Pedidos (id_cliente,referencia,cantidad) VALUES ('{pedido.id_cliente}','{pedido.referencia}','{pedido.cantidad}')"
+def crearPedidoDao(id_cliente,listaPedido):
+    for i in range(len(listaPedido)):
+        query= f"INSERT INTO Pedidos (id_cliente,referencia,cantidad) VALUES ('{id_cliente}','{listaPedido[i].referencia }','{listaPedido[i].cantidad_inventario}')"
+        executeQuery(query)
+
+def eliminarPedidoDao(nombre):
+    id_cliente = verIdClienteDao(nombre)
+    query = f"DELETE FROM Pedidos WHERE id_cliente='{id_cliente}'"
     executeQuery(query)
 
-def verDatosDao(dato,tabla):
-    query = f"SELECT {dato} FROM {tabla}"
-    return busquedaGeneral(query)
+def verPedidosDao(id_cliente):
+    query = f"SELECT * FROM Pedidos WHERE id_cliente='{id_cliente}'"
+    return busqueda(query)
 
-def verDatoDao(dato,tabla,campo,datoCampo):
-    query = f"SELECT {dato} FROM {tabla} WHERE {campo}='{datoCampo}'"
-    return busquedaIndividual(query)
+def verClientesDao():
+    query = f"SELECT nombre FROM Clientes"
+    return busqueda(query)
+
+def verProductosDao():
+    query = f"SELECT referencia FROM Productos"
+    return busqueda(query)
+
+def verIdClienteDao(nombre):
+    query = f"SELECT id_cliente FROM Clientes WHERE nombre='{nombre}'"
+    return busqueda(query)[0][0]
+
+def verNombreCliente_Pedido():
+    query = f"SELECT DISTINCT nombre FROM Clientes,Pedidos WHERE Clientes.id_cliente = Pedidos.id_cliente"
+    return busqueda(query)
+
+def verPrecioProductosDao(referencia):
+    query = f"SELECT precio FROM Productos WHERE referencia = '{referencia}'"
+    return busqueda(query)[0][0] 

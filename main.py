@@ -1,3 +1,4 @@
+from textwrap import fill
 from model.db_dao import *
 import tkinter as tk
 from tkinter import ttk
@@ -23,113 +24,115 @@ def ventana():
     
     return root
   
-def menuCRUD(title):
-    
-    componentes = {}
+class menuCRUD:
+    def __init__(self,title):
+        self.title = title
+        componentes = {}
 
-    root = ventana()
-    root.rowconfigure(0,weight=1)
-    root.rowconfigure(1,weight=1)
-    root.columnconfigure(0,weight=1)
-    root.columnconfigure(1,weight=1)
-    root.columnconfigure(2,weight=1)
+        root = ventana()
+        root.rowconfigure(0,weight=1)
+        root.rowconfigure(1,weight=1)
+        root.columnconfigure(0,weight=1)
+        root.columnconfigure(1,weight=1)
+        root.columnconfigure(2,weight=1)
 
-    componentes['contenedores'] = [tk.Frame(root),tk.Frame(root),
-                                   tk.Frame(root),tk.Frame(root),
-                                   tk.Frame(root),tk.Frame(root)]
+        componentes['contenedores'] = [tk.Frame(root),tk.Frame(root),
+                                    tk.Frame(root),tk.Frame(root),
+                                    tk.Frame(root),tk.Frame(root)]
 
-    contenedor = componentes['contenedores']
+        contenedor = componentes['contenedores']
 
-    contenedor[0].grid(column=0,row=0,sticky="SE",padx=10,pady=10)
-    contenedor[1].grid(column=1,row=0,sticky="S",padx=10,pady=10)
-    contenedor[2].grid(column=0,row=1,sticky="NE",pady=10)
-    contenedor[3].grid(column=1,row=1,sticky="N",padx=10,pady=10)
-    contenedor[4].grid(column=2,row=0,sticky="SW",padx=10,pady=10)
-    contenedor[5].grid(column=2,row=1,sticky="NW",padx=10,pady=10)
+        contenedor[0].grid(column=0,row=0,sticky="SE",padx=10,pady=10)
+        contenedor[1].grid(column=1,row=0,sticky="S",padx=10,pady=10)
+        contenedor[2].grid(column=0,row=1,sticky="NE",pady=10)
+        contenedor[3].grid(column=1,row=1,sticky="N",padx=10,pady=10)
+        contenedor[4].grid(column=2,row=0,sticky="SW",padx=10,pady=10)
+        contenedor[5].grid(column=2,row=1,sticky="NW",padx=10,pady=10)
 
-    tk.Label(root,text=title,font=('helvetica','18','bold')).grid(column=1,row=0,sticky="N")
+        tk.Label(root,text=title,font=('helvetica','18','bold')).grid(column=1,row=0,sticky="N")
 
-    componentes['imagenes']  = [tk.PhotoImage(file="imgs/crear.png"),
-                                tk.PhotoImage(file="imgs/editar.png"),
-                                tk.PhotoImage(file="imgs/eliminar.png"),
-                                tk.PhotoImage(file="imgs/ver.png"),
-                                tk.PhotoImage(file="imgs/volver.png"),
+        componentes['imagenes']  = [tk.PhotoImage(file="imgs/crear.png"),
+                                    tk.PhotoImage(file="imgs/editar.png"),
+                                    tk.PhotoImage(file="imgs/eliminar.png"),
+                                    tk.PhotoImage(file="imgs/ver.png"),
+                                    tk.PhotoImage(file="imgs/volver.png"),
+                                    tk.PhotoImage(file="imgs/salir.png")]
+
+        imagen = componentes['imagenes']
+
+        componentes['botones']  =  [tk.Button(contenedor[0],image=imagen[0],command=lambda:[root.destroy(),formulariosCrear(self.title)]),
+                                    tk.Button(contenedor[1],image=imagen[1]),
+                                    tk.Button(contenedor[2],image=imagen[2],command=lambda:[root.destroy(),formulariosEliminar(self.title)]),
+                                    tk.Button(contenedor[3],image=imagen[3]),
+                                    tk.Button(contenedor[4],image=imagen[4],command=lambda:[root.destroy(),menuPrincipal()]),
+                                    tk.Button(contenedor[5],image=imagen[5],command=root.destroy)]
+
+        boton = componentes['botones']
+
+        componentes['labels'] =[tk.Label(contenedor[0],text="CREAR "+ self.title),
+                                tk.Label(contenedor[1],text="EDITAR "+ self.title),
+                                tk.Label(contenedor[2],text="ELIMINAR "+ self.title),
+                                tk.Label(contenedor[3],text="VER "+ self.title),
+                                tk.Label(contenedor[4],text="VOLVER"),
+                                tk.Label(contenedor[5],text="SALIR")]
+        
+        label = componentes['labels']
+
+        for i in range(len(boton)):
+            boton[i].pack()
+            label[i].pack()
+
+        root.mainloop()
+
+class menuPrincipal:
+    def __init__(self):
+
+        root = ventana()
+        root.rowconfigure(0,weight=1)
+        root.rowconfigure(1,weight=1)
+        root.columnconfigure(0,weight=1)
+        root.columnconfigure(1,weight=1)
+
+        componentes = {}
+
+        componentes['contenedores'] = [tk.Frame(root),tk.Frame(root),
+                                    tk.Frame(root),tk.Frame(root)]
+
+        contenedor = componentes['contenedores']
+
+        contenedor[0].grid(column=0,row=0,sticky="SE",padx=10,pady=10)
+        contenedor[1].grid(column=1,row=0,sticky="SW",padx=10,pady=10)
+        contenedor[2].grid(column=0,row=1,sticky="NE",padx=10,pady=10)
+        contenedor[3].grid(column=1,row=1,sticky="NW",padx=10,pady=10)
+
+
+        componentes['imagenes'] = [tk.PhotoImage(file="imgs/cliente.png"),
+                                tk.PhotoImage(file="imgs/productos.png"),
+                                tk.PhotoImage(file="imgs/pedido.png"),
                                 tk.PhotoImage(file="imgs/salir.png")]
 
-    imagen = componentes['imagenes']
+        imagen = componentes['imagenes']
 
-    componentes['botones']  =  [tk.Button(contenedor[0],image=imagen[0],command=lambda:[root.destroy(),formulariosCrear(title)]),
-                                tk.Button(contenedor[1],image=imagen[1]),
-                                tk.Button(contenedor[2],image=imagen[2],command=lambda:[root.destroy(),formulariosEliminar(title)]),
-                                tk.Button(contenedor[3],image=imagen[3]),
-                                tk.Button(contenedor[4],image=imagen[4],command=lambda:[root.destroy(),menuPrincipal()]),
-                                tk.Button(contenedor[5],image=imagen[5],command=root.destroy)]
+        
+        componentes['botones'] = [tk.Button(contenedor[0],image=imagen[0],command = lambda:[root.destroy(),menuCRUD("CLIENTES")]),
+                                tk.Button(contenedor[1],image=imagen[1],command = lambda:[root.destroy(),menuCRUD("PRODUCTOS")]),
+                                tk.Button(contenedor[2],image=imagen[2],command = lambda:[root.destroy(),menuCRUD("PEDIDOS")]),
+                                tk.Button(contenedor[3],image=imagen[3],command=root.destroy)]
 
-    boton = componentes['botones']
+        boton = componentes['botones']
 
-    componentes['labels'] =[tk.Label(contenedor[0],text="CREAR "+ title),
-                            tk.Label(contenedor[1],text="EDITAR "+ title),
-                            tk.Label(contenedor[2],text="ELIMINAR "+ title),
-                            tk.Label(contenedor[3],text="VER "+ title),
-                            tk.Label(contenedor[4],text="VOLVER"),
-                            tk.Label(contenedor[5],text="SALIR")]
-    
-    label = componentes['labels']
+        componentes['labels'] = [tk.Label(contenedor[0],text="CLIENTES"),
+                                tk.Label(contenedor[1],text="PRODUCTOS"),
+                                tk.Label(contenedor[2],text="PEDIDOS"),
+                                tk.Label(contenedor[3],text="SALIR")]
+        
+        label = componentes['labels']
 
-    for i in range(len(boton)):
-        boton[i].pack()
-        label[i].pack()
+        for i in range(len(boton)):
+            boton[i].pack()
+            label[i].pack()
 
-    root.mainloop()
-
-def menuPrincipal():
-    
-    root = ventana()
-    root.rowconfigure(0,weight=1)
-    root.rowconfigure(1,weight=1)
-    root.columnconfigure(0,weight=1)
-    root.columnconfigure(1,weight=1)
-
-    componentes = {}
-
-    componentes['contenedores'] = [tk.Frame(root),tk.Frame(root),
-                                   tk.Frame(root),tk.Frame(root)]
-
-    contenedor = componentes['contenedores']
-
-    contenedor[0].grid(column=0,row=0,sticky="SE",padx=10,pady=10)
-    contenedor[1].grid(column=1,row=0,sticky="SW",padx=10,pady=10)
-    contenedor[2].grid(column=0,row=1,sticky="NE",padx=10,pady=10)
-    contenedor[3].grid(column=1,row=1,sticky="NW",padx=10,pady=10)
-
-
-    componentes['imagenes'] = [tk.PhotoImage(file="imgs/cliente.png"),
-                              tk.PhotoImage(file="imgs/productos.png"),
-                              tk.PhotoImage(file="imgs/pedido.png"),
-                              tk.PhotoImage(file="imgs/salir.png")]
-
-    imagen = componentes['imagenes']
-
-    
-    componentes['botones'] = [tk.Button(contenedor[0],image=imagen[0],command = lambda:[root.destroy(),menuCRUD("CLIENTES")]),
-                              tk.Button(contenedor[1],image=imagen[1],command = lambda:[root.destroy(),menuCRUD("PRODUCTOS")]),
-                              tk.Button(contenedor[2],image=imagen[2],command = lambda:[root.destroy(),menuCRUD("PEDIDOS")]),
-                              tk.Button(contenedor[3],image=imagen[3],command=root.destroy)]
-
-    boton = componentes['botones']
-
-    componentes['labels'] = [tk.Label(contenedor[0],text="CLIENTES"),
-                             tk.Label(contenedor[1],text="PRODUCTOS"),
-                             tk.Label(contenedor[2],text="PEDIDOS"),
-                             tk.Label(contenedor[3],text="SALIR")]
-    
-    label = componentes['labels']
-
-    for i in range(len(boton)):
-        boton[i].pack()
-        label[i].pack()
-
-    root.mainloop()
+        root.mainloop()
 
 def formulariosCrear(title):
     if(title=='CLIENTES'):
@@ -150,322 +153,380 @@ def formulariosEliminar(title):
 #************************************************ FORMULARIOS *****************************************************************************
 #--------------------------------------------------- CREAR -------------------------------------------------------------------------------
 
-def crearCliente():
-    root = ventana()
+class crearCliente:
+    def __init__(self):
+        root = ventana()
 
-    root.columnconfigure(0,weight=3)
-    root.columnconfigure(1,weight=1)
-    root.columnconfigure(2,weight=1)
-    root.columnconfigure(3,weight=1)
-    root.columnconfigure(4,weight=3)
-    root.rowconfigure(0,weight=1)
-    root.rowconfigure(1,weight=1)
-    root.rowconfigure(2,weight=1)
-    root.rowconfigure(3,weight=8)
-
-
-    header = tk.Label(root,text='CREAR CLIENTE',font=('Glacial indifference','16','bold'))
-    header.grid(column=0,row=0,columnspan=5,pady=5)
-
-    componentes = {}
-
-    componentes['labels'] = [tk.Label(root,text="Nombre: ",font=('Glacial indifference','10','bold')),
-                             tk.Label(root,text="Ciudad: ",font=('Glacial indifference','10','bold'))]
-
-    label = componentes['labels']
-
-    label[0].grid(column=1,row=1,pady=5)
-    label[1].grid(column=1,row=2,pady=5)
-
-    componentes['entries'] = [tk.Entry(root),tk.Entry(root)]
-
-    entry = componentes['entries']
-
-    entry[0].grid(column=2,row=1,sticky="WE",pady=5,columnspan=2)
-    entry[1].grid(column=2,row=2,sticky="WE",pady=5,columnspan=2)
-    
-
-    componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",font=('Glacial indifference','10','bold'),width=15,command = lambda:[root.destroy(),menuCRUD("CLIENTES")]),
-                              tk.Button(root,text="GUARDAR",bg="GREEN",width=15,font=('Glacial indifference','10','bold'),fg="white",command = lambda:[crearClienteDao(cliente(entry[0].get(),entry[1].get())),limpiar(entry)]),
-                              tk.Button(root,text="SALIR",bg="RED",width=15,font=('Glacial indifference','10','bold'),command = root.destroy)]
-    
-    botones = componentes['botones']
-
-    botones[0].grid(column=1,row=3,sticky="S",pady=20)
-    botones[1].grid(column=2,row=3,sticky="S",pady=20)
-    botones[2].grid(column=3,row=3,sticky="S",pady=20)
-
-    root.mainloop()
-
-def crearProducto():
-    root = ventana()
-
-    root.columnconfigure(0,weight=1)
-    root.columnconfigure(1,weight=1)
-    root.columnconfigure(2,weight=1)
-    root.columnconfigure(3,weight=1)
-    root.columnconfigure(4,weight=1)
-    root.rowconfigure(0,weight=1)
-    root.rowconfigure(1,weight=1)
-    root.rowconfigure(2,weight=1)
-    root.rowconfigure(3,weight=1)
-    root.rowconfigure(4,weight=1)
-    root.rowconfigure(5,weight=3)
+        root.columnconfigure(0,weight=3)
+        root.columnconfigure(1,weight=1)
+        root.columnconfigure(2,weight=1)
+        root.columnconfigure(3,weight=1)
+        root.columnconfigure(4,weight=3)
+        root.rowconfigure(0,weight=1)
+        root.rowconfigure(1,weight=1)
+        root.rowconfigure(2,weight=1)
+        root.rowconfigure(3,weight=8)
 
 
-    header = tk.Label(root,text='CREAR PRODUCTO',font=('Glacial indifference','16','bold'))
-    header.grid(column=0,row=0,columnspan=5,pady=20)
+        header = tk.Label(root,text='CREAR CLIENTE',font=('Glacial indifference','16','bold'))
+        header.grid(column=0,row=0,columnspan=5,pady=5)
 
-    componentes = {}
+        componentes = {}
 
-    componentes['labels'] = [tk.Label(root,text="Referencia: ",font=('Glacial indifference','10','bold')),
-                             tk.Label(root,text="Tipo: ",font=('Glacial indifference','10','bold')),
-                             tk.Label(root,text="Precio: ",font=('Glacial indifference','10','bold')),
-                             tk.Label(root,text="Cantidad en \nel inventario: ",font=('Glacial indifference','10','bold'))]
+        componentes['labels'] = [tk.Label(root,text="Nombre: ",font=('Glacial indifference','10','bold')),
+                                tk.Label(root,text="Ciudad: ",font=('Glacial indifference','10','bold'))]
 
-    label = componentes['labels']
+        label = componentes['labels']
 
-    label[0].grid(column=1,row=1,pady=5,sticky="E")
-    label[1].grid(column=1,row=2,pady=5,sticky="E")
-    label[2].grid(column=1,row=3,pady=5,sticky="E")
-    label[3].grid(column=1,row=4,pady=5,sticky="E")
+        label[0].grid(column=1,row=1,pady=5)
+        label[1].grid(column=1,row=2,pady=5)
 
-    componentes['entries'] = [tk.Entry(root,width=13,justify='right'),
-                              tk.Entry(root,width=13,justify='right'),
-                              tk.Entry(root,width=13,justify='right')]
+        componentes['entries'] = [tk.Entry(root),tk.Entry(root)]
 
-    entry = componentes['entries']
+        entry = componentes['entries']
 
-    entry[0].grid(column=2,row=1,pady=5,columnspan=2)
-    entry[1].grid(column=2,row=3,pady=5,columnspan=2)
-    entry[2].grid(column=2,row=4,pady=5,columnspan=2)
+        entry[0].grid(column=2,row=1,sticky="WE",pady=5,columnspan=2)
+        entry[1].grid(column=2,row=2,sticky="WE",pady=5,columnspan=2)
+        
 
-    componentes['comboboxes'] = [ttk.Combobox(root,width=10,values=["CONJUNTO","SHORT"],state="readonly")]
-    comboBox = componentes['comboboxes']
+        componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",font=('Glacial indifference','10','bold'),width=15,command = lambda:[root.destroy(),menuCRUD("CLIENTES")]),
+                                tk.Button(root,text="GUARDAR",bg="GREEN",width=15,font=('Glacial indifference','10','bold'),fg="white",command = lambda:[crearClienteDao(cliente(entry[0].get(),entry[1].get())),limpiar(entry)]),
+                                tk.Button(root,text="SALIR",bg="RED",width=15,font=('Glacial indifference','10','bold'),command = root.destroy)]
+        
+        botones = componentes['botones']
 
-    comboBox[0].grid(column=2,row=2,columnspan=2)
+        botones[0].grid(column=1,row=3,sticky="S",pady=20)
+        botones[1].grid(column=2,row=3,sticky="S",pady=20)
+        botones[2].grid(column=3,row=3,sticky="S",pady=20)
 
-    componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",width=10,font=('Glacial indifference','10','bold'),command = lambda:[root.destroy(),menuCRUD('PRODUCTOS')]),
-                              tk.Button(root,text="GUARDAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),fg="white",command = lambda:[crearProductoDao(produto(entry[0].get(),comboBox[0].get(),entry[1].get(),entry[2].get())),limpiar(entry)]),
-                              tk.Button(root,text="SALIR",bg="RED",width=10,font=('Glacial indifference','10','bold'),command = root.destroy)]
+        root.mainloop()
 
-    boton = componentes['botones']
+class crearProducto():
+    def __init__(self):
+        root = ventana()
 
-    boton[0].grid(column=1,row=5,sticky="S",pady=20)
-    boton[1].grid(column=2,row=5,sticky="S",pady=20)
-    boton[2].grid(column=3,row=5,sticky="S",pady=20)
+        root.columnconfigure(0,weight=1)
+        root.columnconfigure(1,weight=1)
+        root.columnconfigure(2,weight=1)
+        root.columnconfigure(3,weight=1)
+        root.columnconfigure(4,weight=1)
+        root.rowconfigure(0,weight=1)
+        root.rowconfigure(1,weight=1)
+        root.rowconfigure(2,weight=1)
+        root.rowconfigure(3,weight=1)
+        root.rowconfigure(4,weight=1)
+        root.rowconfigure(5,weight=3)
 
-    root.mainloop()
 
-def crearPedido():
-    root = ventana()
+        header = tk.Label(root,text='CREAR PRODUCTO',font=('Glacial indifference','16','bold'))
+        header.grid(column=0,row=0,columnspan=5,pady=20)
 
-    root.columnconfigure(0,weight=1)
-    root.columnconfigure(1,weight=1)
-    root.columnconfigure(2,weight=1)
-    root.columnconfigure(3,weight=1)
-    root.columnconfigure(4,weight=1)
-    root.rowconfigure(0,weight=1)
-    root.rowconfigure(1,weight=1)
-    root.rowconfigure(2,weight=1)
-    root.rowconfigure(3,weight=1)
-    root.rowconfigure(4,weight=5)
+        componentes = {}
 
-    header = tk.Label(root,text='CREAR PEDIDO',font=('Glacial indifference','16','bold'))
-    header.grid(column=0,row=0,columnspan=5,pady=20)
+        componentes['labels'] = [tk.Label(root,text="Referencia: ",font=('Glacial indifference','10','bold')),
+                                tk.Label(root,text="Tipo: ",font=('Glacial indifference','10','bold')),
+                                tk.Label(root,text="Precio: ",font=('Glacial indifference','10','bold')),
+                                tk.Label(root,text="Cantidad en \nel inventario: ",font=('Glacial indifference','10','bold'))]
 
-    componentes = {}
+        label = componentes['labels']
 
-    componentes['labels'] = [tk.Label(root,text="Cliente: ",font=('Glacial indifference','10','bold')),
-                             tk.Label(root,text="referencia: ",font=('Glacial indifference','10','bold')),
-                             tk.Label(root,text="Cantidad: ",font=('Glacial indifference','10','bold'))]
-    
-    label = componentes['labels']
+        label[0].grid(column=1,row=1,pady=5,sticky="E")
+        label[1].grid(column=1,row=2,pady=5,sticky="E")
+        label[2].grid(column=1,row=3,pady=5,sticky="E")
+        label[3].grid(column=1,row=4,pady=5,sticky="E")
 
-    label[0].grid(column=1,row=1,pady=5,sticky="E")
-    label[1].grid(column=1,row=2,pady=5,sticky="E")
-    label[2].grid(column=1,row=3,pady=5,sticky="E")
+        componentes['entries'] = [tk.Entry(root,width=13,justify='right'),
+                                tk.Entry(root,width=13,justify='right'),
+                                tk.Entry(root,width=13,justify='right')]
 
-    componentes['comboBoxes'] = [ttk.Combobox(root,width=10,state="readonly"),
-                                 ttk.Combobox(root,width=10,state="readonly")]
+        entry = componentes['entries']
 
-    comboBox = componentes['comboBoxes']
+        entry[0].grid(column=2,row=1,pady=5,columnspan=2)
+        entry[1].grid(column=2,row=3,pady=5,columnspan=2)
+        entry[2].grid(column=2,row=4,pady=5,columnspan=2)
 
-    comboBox[0].grid(column=2,row=1,columnspan=2)
-    comboBox[1].grid(column=2,row=2,columnspan=2)
+        componentes['comboboxes'] = [ttk.Combobox(root,width=10,values=["CONJUNTO","SHORT"],state="readonly")]
+        comboBox = componentes['comboboxes']
 
-    actualizarComboBox(comboBox[0],"nombre","Clientes")
-    actualizarComboBox(comboBox[1],"referencia","Productos")
+        comboBox[0].grid(column=2,row=2,columnspan=2)
 
-    componentes['entries'] = [tk.Entry(root,justify='right',width=13)]
-    entry = componentes['entries']
+        componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",width=10,font=('Glacial indifference','10','bold'),command = lambda:[root.destroy(),menuCRUD('PRODUCTOS')]),
+                                tk.Button(root,text="GUARDAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),fg="white",command = lambda:[crearProductoDao(produto(entry[0].get(),comboBox[0].get(),entry[1].get(),entry[2].get())),limpiar(entry)]),
+                                tk.Button(root,text="SALIR",bg="RED",width=10,font=('Glacial indifference','10','bold'),command = root.destroy)]
 
-    entry[0].grid(column=2,row=3,pady=5,columnspan=2)
+        boton = componentes['botones']
 
-    componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",width=10,font=('Glacial indifference','10','bold'),command = lambda:[root.destroy(),menuCRUD('PEDIDOS')]),
-                              tk.Button(root,text="GUARDAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),fg="white",command = lambda:[crearPedidoDao(pedido(verDatoDao('id_cliente','Clientes','nombre',comboBox[0].get()),comboBox[1].get(),entry[0].get())),limpiar(entry)]),
-                              tk.Button(root,text="SALIR",bg="RED",width=10,font=('Glacial indifference','10','bold'),command = root.destroy)]
-    
-    boton = componentes['botones']
+        boton[0].grid(column=1,row=5,sticky="S",pady=20)
+        boton[1].grid(column=2,row=5,sticky="S",pady=20)
+        boton[2].grid(column=3,row=5,sticky="S",pady=20)
 
-    boton[0].grid(column=1,row=4,sticky="S",pady=20)
-    boton[1].grid(column=2,row=4,sticky="S",pady=20)
-    boton[2].grid(column=3,row=4,sticky="S",pady=20)
+        root.mainloop()
 
-    root.mainloop()
+class crearPedido:
+    def __init__(self):
+        root = ventana()
+
+        componentes = {}
+
+        frame = tk.Frame(root)
+        frame.pack(fill='x')
+        header = tk.Label(frame,text="ELIMINAR PEDIDO",font=('Glacial indifference','16','bold'))
+        header.pack(fill='x')
+
+        nombreCliente = ttk.Combobox(frame,state='readonly')
+        actualizarComboBox(nombreCliente,verClientesDao())
+        nombreCliente.pack()
+
+        scroll = ttk.Scrollbar(frame)
+        scroll.pack(fill='y',side='right')
+
+        tabla = ttk.Treeview(frame,yscrollcommand=scroll.set,selectmode='browse',height=8)
+        tabla.pack(fill='x',pady=20)
+
+        scroll.config(command=tabla.yview)
+
+        tabla['columns'] = ('Referencias','Precios','Cantiadad','Total')
+        tabla.column("#0", width=0,  stretch='no')
+        tabla.column("Referencias",anchor='center', width=80)
+        tabla.column("Precios",anchor='center',width=80)
+        tabla.column("Cantiadad",anchor='center',width=80)
+        tabla.column("Total",anchor='center',width=80)
+
+        tabla.heading("#0",text="")
+        tabla.heading("Referencias",text="Referencias",anchor='center')
+        tabla.heading("Precios",text="Precios",anchor='center')
+        tabla.heading("Cantiadad",text="Cantiadad",anchor='center')
+        tabla.heading("Total",text="Total",anchor='center')
+
+
+        Input_frame = tk.Frame(root)
+        Input_frame.pack()
+
+        referencia = tk.Label(Input_frame,text="Referencia")
+        referencia.grid(row=0,column=0)
+
+        Cantidad = tk.Label(Input_frame,text="Cantidad")
+        Cantidad.grid(row=0,column=2)
+
+        referencia_comboBox = ttk.Combobox(Input_frame,state='readonly')
+        referencia_comboBox.grid(row=1,column=0)
+        actualizarComboBox(referencia_comboBox,verProductosDao())
+
+        Cantidad_entry = tk.Entry(Input_frame)
+        Cantidad_entry.grid(row=1,column=2)
+
+        listaPedido = []
+        
+        componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",width=10,font=('Glacial indifference','10','bold'),
+                                  command = lambda:[root.destroy(),menuCRUD('PEDIDOS')]),
+
+                                  tk.Button(root,text='AGREGAR',bg='blue',width=10,font=('Glacial indifference','10','bold'),
+                                  command=lambda:[hacerTablaCrearPedido(listaPedido,referencia_comboBox.get(),
+                                  verPrecioProductosDao(referencia_comboBox.get()),Cantidad_entry.get(),tabla),Cantidad_entry.delete(0,'end')]),
+
+                                  tk.Button(root,text="GUARDAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),
+                                  fg="white",command = lambda:[guardarPedidoCrear(listaPedido,nombreCliente,tabla)]),
+
+                                  tk.Button(root,text="SALIR",bg="RED",width=10,font=('Glacial indifference','10','bold'),
+                                  command = root.destroy)]
+
+        boton = componentes['botones']
+
+        for i in range(len(boton)):
+            boton[i].pack(side='left',padx=25)
+
+        root.mainloop()
 
 #-------------------------------------------------- ELIMINAR -------------------------------------------------------------------------------
-def eliminarCliente():
-    root = ventana()
+class eliminarCliente:
+    def __init__(self):
+        root = ventana()
 
-    root.columnconfigure(0,weight=1)
-    root.columnconfigure(1,weight=1)
-    root.columnconfigure(2,weight=1)
-    root.columnconfigure(3,weight=1)
-    root.columnconfigure(4,weight=1)
-    root.rowconfigure(0,weight=1)
-    root.rowconfigure(1,weight=1)
-    root.rowconfigure(2,weight=8)
+        root.columnconfigure(0,weight=1)
+        root.columnconfigure(1,weight=1)
+        root.columnconfigure(2,weight=1)
+        root.columnconfigure(3,weight=1)
+        root.columnconfigure(4,weight=1)
+        root.rowconfigure(0,weight=1)
+        root.rowconfigure(1,weight=1)
+        root.rowconfigure(2,weight=8)
 
-    header = tk.Label(root,text='ELIMINAR CLIENTE',font=('Glacial indifference','16','bold'))
-    header.grid(column=0,row=0,columnspan=5,pady=20)
-    componentes = {}
+        header = tk.Label(root,text='ELIMINAR CLIENTE',font=('Glacial indifference','16','bold'))
+        header.grid(column=0,row=0,columnspan=5,pady=20)
+        componentes = {}
 
-    componentes['labels'] = [tk.Label(root,text="Cliente: ",font=('Glacial indifference','10','bold'))]
+        componentes['labels'] = [tk.Label(root,text="Cliente: ",font=('Glacial indifference','10','bold'))]
 
-    label = componentes['labels']
+        label = componentes['labels']
 
-    label[0].grid(column=1,row=1,pady=5,sticky="E")
+        label[0].grid(column=1,row=1,pady=5,sticky="E")
 
-    componentes['comboBoxes'] = [ttk.Combobox(root,width=10,state="readonly")]
-    comboBox = componentes['comboBoxes']
+        componentes['comboBoxes'] = [ttk.Combobox(root,width=10,state="readonly")]
+        comboBox = componentes['comboBoxes']
 
-    comboBox[0].grid(column=2,row=1,columnspan=2)
-    actualizarComboBox(comboBox[0],"nombre","Clientes")
-    
+        comboBox[0].grid(column=2,row=1,columnspan=2)
+        actualizarComboBox(comboBox[0],verClientesDao())
+        
 
-    componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",width=10,font=('Glacial indifference','10','bold'),command = lambda:[root.destroy(),menuCRUD('CLIENTES')]),
-                              tk.Button(root,text="ELIMINAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),fg="white",command = lambda:[eliminarClienteDao(comboBox[0].get()),actualizarComboBox(comboBox[0],"nombre","Clientes")]),
-                              tk.Button(root,text="SALIR",bg="RED",width=10,font=('Glacial indifference','10','bold'),command = root.destroy)]
+        componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",width=10,font=('Glacial indifference','10','bold'),command = lambda:[root.destroy(),menuCRUD('CLIENTES')]),
+                                tk.Button(root,text="ELIMINAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),fg="white",command = lambda:[eliminarClienteDao(comboBox[0].get()),actualizarComboBox(comboBox[0],verClientesDao())]),
+                                tk.Button(root,text="SALIR",bg="RED",width=10,font=('Glacial indifference','10','bold'),command = root.destroy)]
 
-    boton = componentes['botones']
+        boton = componentes['botones']
 
-    boton[0].grid(column=1,row=4,sticky="S",pady=20)
-    boton[1].grid(column=2,row=4,sticky="S",pady=20)
-    boton[2].grid(column=3,row=4,sticky="S",pady=20)
+        boton[0].grid(column=1,row=4,sticky="S",pady=20)
+        boton[1].grid(column=2,row=4,sticky="S",pady=20)
+        boton[2].grid(column=3,row=4,sticky="S",pady=20)
 
-    root.mainloop()
+        root.mainloop()
 
-def eliminarProducto():
-    root = ventana()
+class eliminarProducto:
+    def __init__(self):
+        root = ventana()
 
-    root.columnconfigure(0,weight=1)
-    root.columnconfigure(1,weight=1)
-    root.columnconfigure(2,weight=1)
-    root.columnconfigure(3,weight=1)
-    root.columnconfigure(4,weight=1)
-    root.rowconfigure(0,weight=1)
-    root.rowconfigure(1,weight=1)
-    root.rowconfigure(2,weight=8)
+        root.columnconfigure(0,weight=1)
+        root.columnconfigure(1,weight=1)
+        root.columnconfigure(2,weight=1)
+        root.columnconfigure(3,weight=1)
+        root.columnconfigure(4,weight=1)
+        root.rowconfigure(0,weight=1)
+        root.rowconfigure(1,weight=1)
+        root.rowconfigure(2,weight=8)
 
-    header = tk.Label(root,text='ELIMINAR PRODUCTOS',font=('Glacial indifference','16','bold'))
-    header.grid(column=0,row=0,columnspan=5,pady=20)
+        header = tk.Label(root,text='ELIMINAR PRODUCTOS',font=('Glacial indifference','16','bold'))
+        header.grid(column=0,row=0,columnspan=5,pady=20)
 
-    componentes = {}
-
-
-    componentes['labels'] = [tk.Label(root,text="Producto: ",font=('Glacial indifference','10','bold'))]
-    label = componentes['labels']                         
-
-    label[0].grid(column=1,row=1,pady=5,sticky="E")
-
-    componentes['comboBoxes'] = [ttk.Combobox(root,width=10,state="readonly")]
-    comboBox = componentes['comboBoxes']
-    comboBox[0].grid(column=2,row=1,columnspan=2)
-
-    actualizarComboBox(comboBox[0],"referencia","Productos")
-
-    componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",width=10,font=('Glacial indifference','10','bold'),command = lambda:[root.destroy(),menuCRUD('PRODUCTOS')]),
-                              tk.Button(root,text="ELIMINAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),fg="white",command = lambda:[eliminarProductoDao(comboBox[0].get()),actualizarComboBox(comboBox[0],"referencia","Productos")]),
-                              tk.Button(root,text="SALIR",bg="RED",width=10,font=('Glacial indifference','10','bold'),command = root.destroy)]
-    
-    boton = componentes['botones']
-
-    boton[0].grid(column=1,row=4,sticky="S",pady=20)
-    boton[1].grid(column=2,row=4,sticky="S",pady=20)
-    boton[2].grid(column=3,row=4,sticky="S",pady=20)
+        componentes = {}
 
 
+        componentes['labels'] = [tk.Label(root,text="Producto: ",font=('Glacial indifference','10','bold'))]
+        label = componentes['labels']                         
 
-    root.mainloop()
+        label[0].grid(column=1,row=1,pady=5,sticky="E")
 
-def eliminarPedido():
-    root = ventana()
+        componentes['comboBoxes'] = [ttk.Combobox(root,width=10,state="readonly")]
+        comboBox = componentes['comboBoxes']
+        comboBox[0].grid(column=2,row=1,columnspan=2)
 
-    root.columnconfigure(0,weight=1)
-    root.columnconfigure(1,weight=1)
-    root.columnconfigure(2,weight=1)
-    root.columnconfigure(3,weight=1)
-    root.columnconfigure(4,weight=1)
-    root.rowconfigure(0,weight=1)
-    root.rowconfigure(1,weight=1)
-    root.rowconfigure(2,weight=1)
-    root.rowconfigure(3,weight=8)
+        actualizarComboBox(comboBox[0],verProductosDao())
 
-    header = tk.Label(root,text='ELIMINAR PEDIDO',font=('Glacial indifference','16','bold'))
-    header.grid(column=0,row=0,columnspan=5,pady=20)
+        componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",width=10,font=('Glacial indifference','10','bold'),command = lambda:[root.destroy(),menuCRUD('PRODUCTOS')]),
+                                tk.Button(root,text="ELIMINAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),fg="white",command = lambda:[eliminarProductoDao(comboBox[0].get()),actualizarComboBox(comboBox[0],verProductosDao())]),
+                                tk.Button(root,text="SALIR",bg="RED",width=10,font=('Glacial indifference','10','bold'),command = root.destroy)]
+        
+        boton = componentes['botones']
 
-    componentes = {}
-    idpedidos  = []
-    referencias = []
-    idcliente = []
+        boton[0].grid(column=1,row=4,sticky="S",pady=20)
+        boton[1].grid(column=2,row=4,sticky="S",pady=20)
+        boton[2].grid(column=3,row=4,sticky="S",pady=20)
 
 
-    pedidos  = verDatosDao('*','Productos')
-    for pedido in pedidos:
-        idpedidos.append(pedido[0])
-        referencias.append(pedido[1])
-        idcliente.append(pedido[2])
+
+        root.mainloop()
+
+class eliminarPedido:
+    def __init__(self):
+        root = ventana()
+
+        componentes = {}
+
+        frame = tk.Frame(root)
+        frame.pack(fill='x')
+        header = tk.Label(frame,text="ELIMINAR PEDIDO",font=('Glacial indifference','16','bold'))
+        header.pack(fill='x')
+
+        nombreCliente = ttk.Combobox(frame,state='readonly')
+        actualizarComboBox(nombreCliente,verNombreCliente_Pedido())
+        nombreCliente.bind('<<ComboboxSelected>>',lambda _ : hacerTablaEliminarPedido(nombreCliente,tabla))    
+        nombreCliente.pack()
+
+        scroll = ttk.Scrollbar(frame)
+        scroll.pack(fill='y',side='right')
+
+        tabla = ttk.Treeview(frame,yscrollcommand=scroll.set,selectmode='browse')
+        tabla.pack(fill='x',pady=20)
+
+        scroll.config(command=tabla.yview)
+
+        tabla['columns'] = ('Referencias','Precios','Cantiadad','Total')
+        tabla.column("#0", width=0,  stretch='no')
+        tabla.column("Referencias",anchor='center', width=80)
+        tabla.column("Precios",anchor='center',width=80)
+        tabla.column("Cantiadad",anchor='center',width=80)
+        tabla.column("Total",anchor='center',width=80)
+
+        tabla.heading("#0",text="")
+        tabla.heading("Referencias",text="Referencias",anchor='center')
+        tabla.heading("Precios",text="Precios",anchor='center')
+        tabla.heading("Cantiadad",text="Cantiadad",anchor='center')
+        tabla.heading("Total",text="Total",anchor='center')
+        hacerTablaEliminarPedido(nombreCliente,tabla) 
+
+        componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",width=10,font=('Glacial indifference','10','bold'),
+                                command = lambda:[root.destroy(),menuCRUD('PEDIDOS')]),
+                                tk.Button(root,text="ELIMINAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),
+                                fg="white",command = lambda:[eliminarPedidoDao(nombreCliente.get()),
+                                actualizarComboBox(nombreCliente,verNombreCliente_Pedido()),hacerTablaEliminarPedido(nombreCliente,tabla)]),
+                                tk.Button(root,text="SALIR",bg="RED",width=10,font=('Glacial indifference','10','bold'),
+                                command = root.destroy)]
+        
+        boton = componentes['botones']
 
 
-    componentes['labels'] = [tk.Label(root,text="Pedido: ",font=('Glacial indifference','10','bold'))]
-    label = componentes['labels']
+        boton[0].pack(side='left',padx=50)
+        boton[1].pack(side='left',padx=50)
+        boton[2].pack(side='left',padx=50)
 
-    label[0].grid(column=1,row=1,pady=5,sticky="E")
-    
-    componentes['entries'] = [tk.Entry(root,state='readonly')]
-
-    componentes['comboBoxes'] = [ttk.Combobox(root,width=10,values=idpedidos,state="readonly")]
-    comboBox = componentes['comboBoxes']
-    comboBox[0].grid(column=2,row=1,columnspan=2)
-
-    actualizarComboBox(comboBox[0],"nombre","Clientes")
-
-    componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",width=10,font=('Glacial indifference','10','bold'),command = lambda:[root.destroy(),menuCRUD('PEDIDOS')]),
-                              tk.Button(root,text="ELIMINAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),fg="white",command = lambda:[root.destroy()]),
-                              tk.Button(root,text="SALIR",bg="RED",width=10,font=('Glacial indifference','10','bold'),command = root.destroy)]
-    boton = componentes['botones']
-
-    boton[0].grid(column=1,row=3,sticky="S",pady=20)
-    boton[1].grid(column=2,row=3,sticky="S",pady=20)
-    boton[2].grid(column=3,row=3,sticky="S",pady=20)
-
-    root.mainloop()
+        root.mainloop()
 
 #------------------------------------------------ FUNCIONES EXTRA ----------------------------------------------------------------------
 
+#Limpia el contenido de los entries que se le pasen
 def limpiar(entries):
     for entry in entries:
         entry.delete(first=0,last=tk.END)
 
-def actualizarComboBox(comboBox,dato,table):
-    datos = verDatosDao(dato,table)
+def limpiarTabla(tabla):
+    for child in tabla.get_children():
+        tabla.delete(child)
+
+def guardarPedidoCrear(listaPedido,nombreCliente,tabla):
+    crearPedidoDao(verIdClienteDao(nombreCliente.get()),listaPedido)
+    limpiarTabla(tabla)
+    listaPedido.clear()
+
+#Recibe el comboBox ha actualizar, el dato que 
+#va a mostrar este y la tabla de donde este sale.
+def actualizarComboBox(comboBox ,datos):
     comboBox.config(values = datos)
     if(len(datos)>0):
         comboBox.current(0)
     else:
         comboBox.set('')
-    
+
+def hacerTablaCrearPedido(listaPedido,referencia,precio,cantidad,tabla):
+    listaPedido.append(produto(referencia,'',precio,cantidad))
+
+    total = int(precio)*int(cantidad)
+    tabla.insert(parent='',index='end',iid=len(tabla.get_children()),text='',
+                values=(referencia,precio,cantidad,total)) 
+
+#Recibe un comboBox y una tabla para hacer los datos de la tabla a partir del contenido del comboBox
+def hacerTablaEliminarPedido(nombreCliente,tabla):
+    limpiarTabla(tabla)
+
+    if(nombreCliente.get() != ''):
+        idCliente = verIdClienteDao(nombreCliente.get())
+        pedidos = verPedidosDao(idCliente)
+        if(len(pedidos)>0):
+            for i in range(len(pedidos)):
+                referencia = pedidos[i][2]
+                cantidad = pedidos[i][3]
+                precio = verPrecioProductosDao(referencia)
+                total = precio*cantidad
+                tabla.insert(parent='',index='end',iid=i,text='',
+                values=(referencia,precio,cantidad,total)) 
+
 
 if __name__ == "__main__":
-    crearCliente()
+    menuPrincipal()
