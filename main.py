@@ -1,7 +1,7 @@
 from textwrap import fill
 from model.db_dao import *
 import tkinter as tk
-from tkinter import ttk
+from tkinter import StringVar, ttk
 from model.models import *
 
 def ventana():
@@ -61,7 +61,7 @@ class menuCRUD:
         imagen = componentes['imagenes']
 
         componentes['botones']  =  [tk.Button(contenedor[0],image=imagen[0],command=lambda:[root.destroy(),formulariosCrear(self.title)]),
-                                    tk.Button(contenedor[1],image=imagen[1]),
+                                    tk.Button(contenedor[1],image=imagen[1],command=lambda:[root.destroy(),formulariosModificar(self.title)]),
                                     tk.Button(contenedor[2],image=imagen[2],command=lambda:[root.destroy(),formulariosEliminar(self.title)]),
                                     tk.Button(contenedor[3],image=imagen[3]),
                                     tk.Button(contenedor[4],image=imagen[4],command=lambda:[root.destroy(),menuPrincipal()]),
@@ -107,9 +107,9 @@ class menuPrincipal:
 
 
         componentes['imagenes'] = [tk.PhotoImage(file="imgs/cliente.png"),
-                                tk.PhotoImage(file="imgs/productos.png"),
-                                tk.PhotoImage(file="imgs/pedido.png"),
-                                tk.PhotoImage(file="imgs/salir.png")]
+                                   tk.PhotoImage(file="imgs/productos.png"),
+                                   tk.PhotoImage(file="imgs/pedido.png"),
+                                   tk.PhotoImage(file="imgs/salir.png")]
 
         imagen = componentes['imagenes']
 
@@ -150,8 +150,16 @@ def formulariosEliminar(title):
     elif(title=='PEDIDOS'):
         eliminarPedido()
 
+def formulariosModificar(title):
+    if(title=='CLIENTES'):
+        modificarClientes()
+    elif(title=='PRODUCTOS'):
+        pass
+    elif(title=='PEDIDOS'):
+        pass
+
 #************************************************ FORMULARIOS *****************************************************************************
-#--------------------------------------------------- CREAR -------------------------------------------------------------------------------
+#---------------------------------------------------- CREAR -------------------------------------------------------------------------------
 
 class crearCliente:
     def __init__(self):
@@ -201,7 +209,7 @@ class crearCliente:
 
         root.mainloop()
 
-class crearProducto():
+class crearProducto:
     def __init__(self):
         root = ventana()
 
@@ -274,7 +282,7 @@ class crearPedido:
         header.pack(fill='x')
 
         nombreCliente = ttk.Combobox(frame,state='readonly')
-        actualizarComboBox(nombreCliente,verClientesDao())
+        actualizarComboBox(nombreCliente,filtrarNombres(verClientesDao()))
         nombreCliente.pack()
 
         scroll = ttk.Scrollbar(frame)
@@ -298,7 +306,6 @@ class crearPedido:
         tabla.heading("Cantiadad",text="Cantiadad",anchor='center')
         tabla.heading("Total",text="Total",anchor='center')
 
-
         Input_frame = tk.Frame(root)
         Input_frame.pack()
 
@@ -316,16 +323,29 @@ class crearPedido:
         Cantidad_entry.grid(row=1,column=2)
 
         listaPedido = []
+
+        def agregarProductoTabla():
+            precio  = verPrecioProductosDao(referencia_comboBox.get())
+            listaPedido.append(produto(referencia_comboBox.get(),'',precio,Cantidad_entry.get()))
+
+            total = int(precio)*int(Cantidad_entry.get())
+            tabla.insert(parent='',index='end',iid=len(tabla.get_children()),text='',
+                        values=(referencia_comboBox.get(),precio,Cantidad_entry.get(),total)) 
+            Cantidad_entry.delete(0,'end')
+
+        def guardaPedido():
+            crearPedidoDao(verIdClienteDao(nombreCliente.get()),listaPedido)
+            limpiarTabla(tabla)
+            listaPedido.clear()
         
         componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",width=10,font=('Glacial indifference','10','bold'),
                                   command = lambda:[root.destroy(),menuCRUD('PEDIDOS')]),
 
                                   tk.Button(root,text='AGREGAR',bg='blue',width=10,font=('Glacial indifference','10','bold'),
-                                  command=lambda:[hacerTablaCrearPedido(listaPedido,referencia_comboBox.get(),
-                                  verPrecioProductosDao(referencia_comboBox.get()),Cantidad_entry.get(),tabla),Cantidad_entry.delete(0,'end')]),
+                                  command=agregarProductoTabla),
 
                                   tk.Button(root,text="GUARDAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),
-                                  fg="white",command = lambda:[guardarPedidoCrear(listaPedido,nombreCliente,tabla)]),
+                                  fg="white",command = guardaPedido),
 
                                   tk.Button(root,text="SALIR",bg="RED",width=10,font=('Glacial indifference','10','bold'),
                                   command = root.destroy)]
@@ -365,11 +385,11 @@ class eliminarCliente:
         comboBox = componentes['comboBoxes']
 
         comboBox[0].grid(column=2,row=1,columnspan=2)
-        actualizarComboBox(comboBox[0],verClientesDao())
+        actualizarComboBox(comboBox[0],filtrarNombres(verClientesDao()))
         
 
         componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",width=10,font=('Glacial indifference','10','bold'),command = lambda:[root.destroy(),menuCRUD('CLIENTES')]),
-                                tk.Button(root,text="ELIMINAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),fg="white",command = lambda:[eliminarClienteDao(comboBox[0].get()),actualizarComboBox(comboBox[0],verClientesDao())]),
+                                tk.Button(root,text="ELIMINAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),fg="white",command = lambda:[eliminarClienteDao(comboBox[0].get()),actualizarComboBox(comboBox[0],filtrarNombres(verClientesDao()))]),
                                 tk.Button(root,text="SALIR",bg="RED",width=10,font=('Glacial indifference','10','bold'),command = root.destroy)]
 
         boton = componentes['botones']
@@ -436,8 +456,7 @@ class eliminarPedido:
         header.pack(fill='x')
 
         nombreCliente = ttk.Combobox(frame,state='readonly')
-        actualizarComboBox(nombreCliente,verNombreCliente_Pedido())
-        nombreCliente.bind('<<ComboboxSelected>>',lambda _ : hacerTablaEliminarPedido(nombreCliente,tabla))    
+        actualizarComboBox(nombreCliente,verNombreCliente_Pedido())   
         nombreCliente.pack()
 
         scroll = ttk.Scrollbar(frame)
@@ -460,13 +479,131 @@ class eliminarPedido:
         tabla.heading("Precios",text="Precios",anchor='center')
         tabla.heading("Cantiadad",text="Cantiadad",anchor='center')
         tabla.heading("Total",text="Total",anchor='center')
-        hacerTablaEliminarPedido(nombreCliente,tabla) 
+
+        #a partir del contenido del comboBox muestra los datos
+        def hacerTabla(event=None):
+            limpiarTabla(tabla)
+            if(nombreCliente.get() != ''):
+                idCliente = verIdClienteDao(nombreCliente.get())
+                pedidos = verPedidosDao(idCliente)
+                if(len(pedidos)>0):
+                    for i in range(len(pedidos)):
+                        referencia = pedidos[i][2]
+                        cantidad = pedidos[i][3]
+                        precio = verPrecioProductosDao(referencia)
+                        total = precio*cantidad
+                        tabla.insert(parent='',index='end',iid=i,text='',
+                        values=(referencia,precio,cantidad,total)) 
+
+        def eliminarPedidoRegistrado():
+            limpiarTabla(tabla)
+            eliminarPedidoDao(nombreCliente.get()),actualizarComboBox(nombreCliente,verNombreCliente_Pedido())
+            actualizarComboBox(nombreCliente,verNombreCliente_Pedido())
+            hacerTabla()
+
+        hacerTabla()
+        nombreCliente.bind('<<ComboboxSelected>>',hacerTabla) 
 
         componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",width=10,font=('Glacial indifference','10','bold'),
-                                command = lambda:[root.destroy(),menuCRUD('PEDIDOS')]),
-                                tk.Button(root,text="ELIMINAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),
-                                fg="white",command = lambda:[eliminarPedidoDao(nombreCliente.get()),
-                                actualizarComboBox(nombreCliente,verNombreCliente_Pedido()),hacerTablaEliminarPedido(nombreCliente,tabla)]),
+                                  command = lambda:[root.destroy(),menuCRUD('PEDIDOS')]),
+
+                                  tk.Button(root,text="ELIMINAR",bg="GREEN",width=10,font=('Glacial indifference','10','bold'),
+                                  fg="white",command = eliminarPedidoRegistrado),
+
+                                  tk.Button(root,text="SALIR",bg="RED",width=10,font=('Glacial indifference','10','bold'),
+                                  command = root.destroy)]
+        
+        boton = componentes['botones']
+
+
+        boton[0].pack(side='left',padx=50)
+        boton[1].pack(side='left',padx=50)
+        boton[2].pack(side='left',padx=50)
+
+        root.mainloop()
+
+#-------------------------------------------------- MODIFICAR ---------------------------------------------------------------------------
+class modificarClientes:
+    def __init__(self):
+        root = ventana()
+
+        componentes = {}
+
+        frame = tk.Frame(root)
+        frame.pack(fill='x')
+        header = tk.Label(frame,text="EDITAR CLIENTES",font=('Glacial indifference','16','bold'))
+        header.pack(fill='x')
+
+        scroll = ttk.Scrollbar(frame)
+        scroll.pack(fill='y',side='right')
+
+        tabla = ttk.Treeview(frame,yscrollcommand=scroll.set,selectmode='browse')
+        tabla.pack(fill='x',pady=20)
+
+        scroll.config(command=tabla.yview)
+
+        tabla['columns'] = ('Nombre','Ciudad')
+        tabla.column("#0", width=0,  stretch='no')
+        tabla.column("Nombre",anchor='center', width=80)
+        tabla.column("Ciudad",anchor='center',width=80)
+
+        tabla.heading("#0",text="")
+        tabla.heading("Nombre",text="Nombre",anchor='center')
+        tabla.heading("Ciudad",text="Ciudad",anchor='center')
+
+        clientes = verClientesDao()
+        for i in range(len(clientes)):
+            tabla.insert(parent='',index='end',iid=i,text='',values=(clientes[i][1],clientes[i][2])) 
+
+        Input_frame = tk.Frame(root)
+        Input_frame.pack()
+
+        Nombre = tk.Label(Input_frame,text="Nombre")
+        Nombre.grid(row=0,column=0)
+
+        Ciudad = tk.Label(Input_frame,text="Ciudad")
+        Ciudad.grid(row=0,column=2)
+
+        Nombre_Entry = tk.Entry(Input_frame)
+        Nombre_Entry.grid(row=1,column=0)
+
+        Ciudad_entry = tk.Entry(Input_frame)
+        Ciudad_entry.grid(row=1,column=2)
+
+        #actualiza los datos de los entries con el registro seleccionado 
+        def registroSeleccionado(event):
+            boton[1].config(bg='GREEN',state='normal')
+            #clear entry boxes
+            Nombre_Entry.delete(0,'end')
+            Ciudad_entry.delete(0,'end')
+            
+            #grab record
+            seleccionado = tabla.focus()
+            #grab record values
+            values = tabla.item(seleccionado,'values')
+            #temp_label.config(text=selected)
+
+            #output to entry boxes
+            Nombre_Entry.insert(0,values[0])
+            Ciudad_entry.insert(0,values[1])
+        
+        def modificarRegistro():
+            modificarClienteDao(verIdClienteDao(tabla.item(tabla.focus(),'values')[0]),Nombre_Entry.get(),Ciudad_entry.get())
+            #save new data 
+            tabla.item(tabla.focus(),text="",values=(Nombre_Entry.get(),Ciudad_entry.get()))
+            
+             #clear entry boxes
+            Nombre_Entry.delete(0,'end')
+            Ciudad_entry.delete(0,'end')
+
+            boton[1].config(bg='WHITE',state='disable')
+
+        tabla.bind('<<TreeviewSelect>>',registroSeleccionado)
+
+        componentes['botones'] = [tk.Button(root,text="VOLVER",bg="ORANGE",width=10,font=('Glacial indifference','10','bold'),
+                                command = lambda:[root.destroy(),menuCRUD('CLIENTES')]),
+                                tk.Button(root,text="EDITAR",state='disable',bg="WHITE",width=10,font=('Glacial indifference','10','bold'),
+                                fg="white",command= modificarRegistro),
                                 tk.Button(root,text="SALIR",bg="RED",width=10,font=('Glacial indifference','10','bold'),
                                 command = root.destroy)]
         
@@ -490,11 +627,6 @@ def limpiarTabla(tabla):
     for child in tabla.get_children():
         tabla.delete(child)
 
-def guardarPedidoCrear(listaPedido,nombreCliente,tabla):
-    crearPedidoDao(verIdClienteDao(nombreCliente.get()),listaPedido)
-    limpiarTabla(tabla)
-    listaPedido.clear()
-
 #Recibe el comboBox ha actualizar, el dato que 
 #va a mostrar este y la tabla de donde este sale.
 def actualizarComboBox(comboBox ,datos):
@@ -504,29 +636,11 @@ def actualizarComboBox(comboBox ,datos):
     else:
         comboBox.set('')
 
-def hacerTablaCrearPedido(listaPedido,referencia,precio,cantidad,tabla):
-    listaPedido.append(produto(referencia,'',precio,cantidad))
-
-    total = int(precio)*int(cantidad)
-    tabla.insert(parent='',index='end',iid=len(tabla.get_children()),text='',
-                values=(referencia,precio,cantidad,total)) 
-
-#Recibe un comboBox y una tabla para hacer los datos de la tabla a partir del contenido del comboBox
-def hacerTablaEliminarPedido(nombreCliente,tabla):
-    limpiarTabla(tabla)
-
-    if(nombreCliente.get() != ''):
-        idCliente = verIdClienteDao(nombreCliente.get())
-        pedidos = verPedidosDao(idCliente)
-        if(len(pedidos)>0):
-            for i in range(len(pedidos)):
-                referencia = pedidos[i][2]
-                cantidad = pedidos[i][3]
-                precio = verPrecioProductosDao(referencia)
-                total = precio*cantidad
-                tabla.insert(parent='',index='end',iid=i,text='',
-                values=(referencia,precio,cantidad,total)) 
-
+def filtrarNombres(datos):
+    nombres = []
+    for dato in datos:
+        nombres.append(dato[1])
+    return nombres
 
 if __name__ == "__main__":
     menuPrincipal()
